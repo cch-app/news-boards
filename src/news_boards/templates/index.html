@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ site_name }}{% endblock %}
+{% block main %}
+  {% if not results %}
+    <p class="text-stone-500">No sources configured.</p>
+  {% endif %}
+  <div class="accordion-stack flex flex-col gap-4">
+    {% for block in results %}
+      <details class="group overflow-hidden rounded-xl border border-amber-200/50 bg-white shadow-md open:shadow-lg" {% if loop.first %}open{% endif %}>
+        <summary
+          class="flex cursor-pointer list-none items-center justify-between gap-3 bg-gradient-to-br from-amber-50 to-white px-4 py-4 font-bold text-lg text-stone-900 transition-colors hover:from-orange-50/80 hover:to-white focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/50 [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1 text-left">
+            <span class="min-w-0 flex-1 font-bold text-stone-900">{{ block.source.name }}</span>
+            {% if block.last_build_display %}
+              <span class="shrink-0 text-sm font-medium text-stone-500">{{ block.last_build_display }}</span>
+            {% endif %}
+          </span>
+          <span
+            class="mt-0.5 inline-block h-2.5 w-2.5 shrink-0 rotate-45 border-r-2 border-b-2 border-orange-600 transition-transform group-open:-rotate-[135deg]"
+            aria-hidden="true"
+          ></span>
+        </summary>
+        <div class="border-t border-amber-200/40 px-4 py-4">
+          {% if block.error %}
+            <p class="m-0 rounded-lg bg-red-50 px-4 py-3 font-semibold text-red-800" role="alert">
+              {{ block.error }}
+            </p>
+          {% elif not block.entries %}
+            <p class="text-stone-500">No entries in this feed.</p>
+          {% else %}
+            <div
+              class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]"
+            >
+              {% for entry in block.entries %}
+                <article
+                  class="rounded-lg border border-amber-200/40 bg-amber-50/50 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  <h3 class="mb-2 text-[1.05rem] font-semibold leading-snug text-stone-900">
+                    {% if entry.link %}
+                      <a
+                        class="text-stone-900 no-underline hover:text-orange-600"
+                        href="{{ entry.link }}"
+                        rel="noopener noreferrer"
+                        >{{ entry.title }}</a
+                      >
+                    {% else %}
+                      <span>{{ entry.title }}</span>
+                    {% endif %}
+                  </h3>
+                  {% if entry.published %}
+                    <p class="m-0 text-sm text-stone-500">{{ entry.published }}</p>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </details>
+    {% endfor %}
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script>
+    document.querySelectorAll(".accordion-stack details").forEach(function (el) {
+      el.addEventListener("toggle", function () {
+        if (!el.open) return;
+        document.querySelectorAll(".accordion-stack details").forEach(function (other) {
+          if (other !== el) other.removeAttribute("open");
+        });
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,36 @@
+---
+description: GitHub Actions CI—Python 3.13 via uv, locked deps, tests, caching, secrets, and safe workflow hygiene
+globs: **/.github/workflows/**
+alwaysApply: false
+---
+
+# GitHub Actions (CI)
+
+## Workflow quality
+
+- **Pin third-party actions** to a **commit SHA** or a **released version tag** (avoid `@main` / floating branches).
+- Set minimal `permissions:` for `GITHUB_TOKEN` (e.g. `contents: read` for checkout + build only).
+- Use **concurrency** so new pushes to the same branch cancel or supersede in-flight runs (faster feedback, fewer wasted minutes).
+
+## Python 3.13 (uv)
+
+- Install **uv** with the official **`astral-sh/setup-uv`** action (pin a release tag or SHA), then run **`uv sync --frozen`** (or **`--all-extras`** if the project uses extras) so CI matches **`uv.lock`**—same as local **`uv sync`**.
+- Match **Python 3.13** with **`uv python install 3.13`** in the workflow or via **`python-version`** / **`.python-version`** as uv documents; keep CI aligned with **project-autonomy** (pin + lockfile).
+- Cache **`~/.cache/uv`** (or the path the setup action recommends) between runs.
+- Run checks through **`uv run`** (e.g. **`uv run pytest`**, **`uv run ruff check .`**, **`uv run mypy`**) so the same environment as local development is used.
+- Fail the workflow on failures—no `continue-on-error` on required checks.
+
+## Pull requests
+
+- Required checks should include at least: **install**, **lint** (if configured), **tests**, and any **build/package** step needed for deployment.
+
+## Secrets and tokens
+
+- Read secrets from **`secrets.*`** or **environments**; never print secret values or pass them to untrusted scripts.
+- Do not commit **Personal Access Tokens** or **Vercel tokens** into the repo; store in GitHub **Secrets** and reference by name.
+
+```yaml
+# ✅ Prefer explicit permissions
+permissions:
+  contents: read
+```

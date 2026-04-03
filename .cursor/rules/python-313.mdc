@@ -1,0 +1,40 @@
+---
+description: Python 3.13 practices—async IO, HTTP clients, typing, packaging, and safe request-scoped side effects
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python 3.13 guardrails
+
+## Concurrency and blocking work
+
+- Do not block the event loop: avoid long **CPU-bound** or synchronous IO on the main thread in async apps—use **`asyncio.to_thread()`**, a **process pool**, or dedicated workers for heavy work.
+- In async code, use **`asyncio.TaskGroup`** (3.11+) or structured patterns; cancel work when a request or UI scope ends.
+
+## Networking (e.g. httpx, aiohttp, urllib3)
+
+- Set **timeouts** on every client used in production (connect + read + write/pool as supported).
+- Treat non-2xx and transport errors as explicit failures; do not treat an empty body as success without checking status.
+
+## Packaging and layout
+
+- Prefer **`src/` layout** and explicit packages; avoid import side effects at module import time for app wiring.
+- Use **type hints** (PEP 695 type aliases, `typing` / `collections.abc` where appropriate) compatible with Python 3.13.
+
+## Local environment (uv)
+
+- This repo uses **uv** and a **`.venv`**: after **`uv sync`**, run CLIs and tests with **`uv run …`** so the locked **Python 3.13** environment is used (see **project-autonomy** for pin/sync commands).
+
+## Side effects at import vs runtime
+
+- **Do not** trigger network calls, DB connections, or global mutable setup at **import** time except in thin, documented entrypoints (e.g. ASGI factory). Prefer explicit **`main`** or app factory functions.
+
+```python
+# ❌ BAD — runs at import, hard to test and compose
+response = httpx.get("https://example.com/api")
+
+# ✅ GOOD — call from request handler or main with timeouts
+async def fetch():
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        return await client.get("https://example.com/api")
+```

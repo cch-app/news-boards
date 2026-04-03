@@ -1,0 +1,40 @@
+---
+description: SOLID design for Python 3.13—cohesive modules, protocols, composition—without pointless indirection
+globs: **/*.py
+alwaysApply: false
+---
+
+# SOLID (practical Python)
+
+Apply alongside **clean-architecture-python**: SOLID guides **shape** of modules and types; Clean Architecture guides **where** they live.
+
+## S — Single responsibility
+
+- One module or class should have **one reason to change** (e.g. parsing RSS vs persisting settings vs HTTP routing).
+- Split when a change forces unrelated edits (routing + HTTP + DB in one huge function → extract).
+
+## O — Open for extension, closed for modification
+
+- Prefer **composition** (constructor injection, `Protocol` dependencies) and **`typing.Literal` / enums / sealed-style unions** for variants over giant `if mode == …` across files.
+- Add new behavior with **new types** or a single registry, not scattered conditionals.
+
+## L — Liskov substitution
+
+- Implementations and test fakes must honor the **protocol** or ABC contract (no raising where the interface implies success, no stricter preconditions).
+- Prefer **immutable** or **frozen** dataclasses where practical to avoid surprising mutation.
+
+## I — Interface segregation
+
+- Prefer **small** `Protocol` or ABC types (`FeedLoader`, `PostStore`) over one “god” class with twenty unrelated methods.
+- Use **narrow** types and **callbacks** instead of fat interfaces when polymorphism is not needed.
+
+## D — Dependency inversion
+
+- High-level code depends on **abstractions** (protocols, injected callables), not concrete HTTP clients or DB drivers wired inside domain logic.
+- **Do not** invert everything: introduce protocols where there are **multiple implementations**, **tests without IO**, or **stable boundaries** (see clean-architecture rule for when a plain class is enough).
+
+```python
+# ✅ D + I: depend on what you use, inject for tests
+class RefreshFeeds:
+    def __init__(self, loader: FeedLoader, store: PostStore) -> None: ...
+```

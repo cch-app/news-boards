@@ -1,0 +1,35 @@
+---
+description: Clean Architecture layering for Python 3.13 with pragmatic limits to avoid over-abstracting
+globs: **/*.py
+alwaysApply: false
+---
+
+# Clean Architecture (pragmatic)
+
+## Dependency direction
+
+- **Domain** (entities, business rules, protocols / abstract interfaces the domain needs): no imports from frameworks (FastAPI, Django ORM, HTTP clients) or UI.
+- **Data** (API clients, DB, DTOs, repository **implementations**): may depend on domain; map IO failures to domain errors.
+- **Presentation** (FastAPI routers, CLI, templates): calls use cases or application services; no raw HTTP client usage deep inside request handlers without going through an application layer when complexity warrants it.
+
+Inner layers define **contracts** (`typing.Protocol` or ABCs); outer layers implement them.
+
+## Packaging
+
+- Group domain and application code in **clear packages** (`domain/`, `application/`, `infrastructure/` or equivalent). Split into multiple installable packages only when reuse or boundaries require it.
+
+## Avoid overdesign
+
+- **Do not** add a package or ABC for every function. Start with **modules and packages**; extract protocols when you need **multiple implementations** or **test doubles**.
+- **Repository protocol**: introduce when there is more than one implementation **or** you must test domain without IO; otherwise a concrete class is fine for small apps.
+- **Use cases / services**: use when orchestrating multiple dependencies or nontrivial rules; skip pass-through classes that only wrap one call with no logic.
+- Prefer **dataclasses** / **Pydantic models** at boundaries and **plain functions** where a class adds no cohesion.
+
+```python
+# ❌ Overkill early on
+class IUserRepositoryFactoryProvider: ...
+
+# ✅ Enough until you need another implementation
+class UserRepository:
+    def load(self) -> User: ...
+```

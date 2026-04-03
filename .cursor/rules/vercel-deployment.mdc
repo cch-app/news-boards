@@ -1,0 +1,26 @@
+---
+description: Vercel deployment for Python web or static frontends—build, output, runtime, env, GitHub integration
+globs: vercel.json
+alwaysApply: false
+---
+
+# Vercel deployment
+
+## Build output
+
+- **Static sites**: configure **Build Command** and **Output Directory** for the framework (e.g. Vite, static HTML) so Vercel serves the generated folder.
+- **Python serverless** (e.g. FastAPI via Mangum-style adapters or Vercel’s Python runtime): follow Vercel’s **entrypoint** and **dependencies** layout. Locally the project uses **uv** (`pyproject.toml` / `uv.lock`); if Vercel needs a **`requirements.txt`**, generate it with **`uv export`** (or the project’s documented export step) rather than hand-maintaining pins out of sync with **`uv.lock`**.
+
+## Configuration
+
+- Keep **`vercel.json`** minimal: **headers**, **rewrites**, redirects—only what the app requires (e.g. SPA fallback to `index.html` when appropriate).
+- **Do not** put secrets in `vercel.json`. Use **Vercel Environment Variables** (Production / Preview / Development) and mirror names used locally where possible.
+
+## GitHub integration
+
+- Connect the **GitHub repo** to Vercel for **Preview** deployments on PRs and **Production** on the production branch (typically `main`).
+- Align **Python version** (uv-pinned **3.13**), **Node version** (if the frontend build uses Node), and **install commands** with GitHub Actions so “green locally / green in CI / green on Vercel” stays consistent.
+
+## CI vs Vercel
+
+- Either **build and test in GitHub Actions** and deploy artifacts, or **let Vercel run the build**—pick one primary path and document it. Avoid conflicting install or lockfile usage without documenting which is authoritative.

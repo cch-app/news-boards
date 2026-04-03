@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Configuration error · {{ site_name }}{% endblock %}
+{% block main %}
+  <article>
+    <h2 class="mt-0 text-xl font-bold text-stone-900">Configuration required</h2>
+    <p class="m-0 rounded-lg bg-red-50 px-4 py-3 font-semibold text-red-800" role="alert">{{ error }}</p>
+    <p class="mt-4 text-sm text-stone-600">
+      Set <code class="rounded bg-amber-100/80 px-1.5 py-0.5 text-sm text-stone-800">BLOG_SOURCES</code> in your environment. Use a JSON array of objects with
+      <code class="rounded bg-amber-100/80 px-1.5 py-0.5 text-sm text-stone-800">name</code> and
+      <code class="rounded bg-amber-100/80 px-1.5 py-0.5 text-sm text-stone-800">url</code>. Optionally add
+      <code class="rounded bg-amber-100/80 px-1.5 py-0.5 text-sm text-stone-800">id</code> for a stable key.
+    </p>
+  </article>
+{% endblock %}

@@ -1,0 +1,11 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Set BLOG_SOURCES before `compose up` or in a `.env` file beside this file.
+      BLOG_SOURCES: ${BLOG_SOURCES}
+      POSTS_PER_SOURCE: ${POSTS_PER_SOURCE:-6}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-300}
+      SECRET_KEY: ${SECRET_KEY:-dev-docker-secret}

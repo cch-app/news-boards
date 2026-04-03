@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{{ site_name }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="flex min-h-screen flex-col bg-amber-50 font-sans text-stone-900 antialiased"
+  >
+    <header class="mx-auto w-full max-w-5xl px-4 pb-2 pt-8">
+      <h1 class="mb-1 text-3xl font-extrabold tracking-tight">
+        <a
+          class="text-stone-900 no-underline hover:text-orange-600"
+          href="{{ url_for('main.index') }}"
+          >{{ site_name }}</a
+        >
+      </h1>
+      <p class="text-base text-stone-600">Posts from your fave feeds</p>
+    </header>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 pb-8">{% block main %}{% endblock %}</main>
+    <footer class="mt-auto border-t border-amber-200/40 px-4 py-8 text-center text-sm text-stone-500">
+      {% if current_year == 2026 %}
+      <p class="m-0">© {{ current_year }} {{ footer_text }}</p>
+      {% else %}
+      <p class="m-0">© 2026 - {{ current_year }} {{ footer_text }}</p>
+      {% endif %}
+    </footer>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
