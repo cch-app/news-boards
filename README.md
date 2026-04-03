@@ -38,7 +38,7 @@ Then open `http://localhost:8000/`. Agent-oriented notes and the Vercel vs Docke
    uv export --no-hashes --no-dev -o requirements.txt
    ```
 
-4. The serverless entry is [`api/index.py`](api/index.py); [`vercel.json`](vercel.json) rewrites all routes to it.
+4. The serverless entry is [`api/index.py`](api/index.py) (imports [`news_boards.wsgi`](src/news_boards/wsgi.py)); [`vercel.json`](vercel.json) rewrites all routes to it. A root [`.python-version`](.python-version) pins the Python runtime so Vercel can resolve the version when using `pyproject.toml`.
 
 ## Environment
 

@@ -10,6 +10,6 @@ _src = _root / "src"
 if str(_src) not in sys.path:
     sys.path.insert(0, str(_src))
 
-from news_boards import create_app
+from news_boards.wsgi import app  # noqa: E402
 
-app = create_app()
+__all__ = ["app"]

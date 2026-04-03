@@ -2,7 +2,7 @@
 
 ## Gunicorn application factory
 
-The app exposes a **factory** `create_app`, not a module-level `app` (except in `api/index.py` for Vercel).
+The app exposes a **factory** `create_app`, plus a module-level `app` in [`news_boards.wsgi`](../../../src/news_boards/wsgi.py) for Vercel (`api/index.py` imports it).
 
 Use (factory: the `()` on `create_app` tells Gunicorn to call the factory):
 
