@@ -1,6 +1,6 @@
 # News boards
 
-Flask app that aggregates RSS/Atom feeds from URLs configured via environment variables, grouped by source. Intended for [Vercel](https://vercel.com/) (Python serverless).
+Flask app that aggregates RSS/Atom feeds from URLs configured via environment variables, grouped by **category** then by source. Intended for [Vercel](https://vercel.com/) (Python serverless).
 
 ## Local development
 
@@ -44,7 +44,7 @@ Then open `http://localhost:8000/`. Agent-oriented notes and the Vercel vs Docke
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `BLOG_SOURCES` | Yes | JSON array of objects. Each object must have **`name`** (string) and **`url`** (string). **`id`** is optional (defaults to `src-0`, `src-1`, …). URLs may be a direct RSS/Atom feed or a normal site URL; the app looks for `<link rel="alternate" type="application/rss+xml">` (and similar) on HTML pages. |
+| `BLOG_SOURCES` | Yes | JSON array of objects. Each object must have **`name`** (string) and **`url`** (string). **`id`** is optional (defaults to `src-0`, `src-1`, …). **`category`** is optional (freeform string, e.g. `AI`, `Frontend`; defaults to **`General`**). Categories appear as section headings in first-seen order. URLs may be a direct RSS/Atom feed or a normal site URL; the app looks for `<link rel="alternate" type="application/rss+xml">` (and similar) on HTML pages. |
 | `SITE_NAME` | No | Site title (default `News boards`). |
 | `FOOTER_TEXT` | No | Footer copyright name in the UI (default `News boards by Alan Chan`) |
 | `POSTS_PER_SOURCE` | No | Max posts per source (default `6`, max `100`). |
@@ -55,8 +55,8 @@ Example value for `BLOG_SOURCES` (single line in the dashboard, or use multiline
 
 ```json
 [
-  {"name": "Ada", "url": "https://example.org/", "id": "ada"},
-  {"name": "News", "url": "https://example.com/feed.atom"}
+  {"name": "Ada", "url": "https://example.org/", "id": "ada", "category": "Backend"},
+  {"name": "News", "url": "https://example.com/feed.atom", "category": "AI"}
 ]
 ```
 

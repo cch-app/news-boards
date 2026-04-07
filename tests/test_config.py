@@ -48,6 +48,42 @@ def test_blog_sources_ok(monkeypatch: pytest.MonkeyPatch) -> None:
     assert sources[0].name == "A"
     assert sources[0].url == "https://example.com/feed.xml"
     assert sources[0].id == "src-0"
+    assert sources[0].category == "General"
+
+
+def test_blog_sources_category_explicit(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(
+        "BLOG_SOURCES",
+        json.dumps(
+            [
+                {
+                    "name": "A",
+                    "url": "https://a.example/feed.xml",
+                    "category": " AI ",
+                }
+            ]
+        ),
+    )
+    sources = load_blog_sources()
+    assert sources[0].category == "AI"
+
+
+def test_blog_sources_category_empty_string_is_general(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(
+        "BLOG_SOURCES",
+        json.dumps([{"name": "A", "url": "https://a.example/feed.xml", "category": "  "}]),
+    )
+    sources = load_blog_sources()
+    assert sources[0].category == "General"
+
+
+def test_blog_sources_category_wrong_type(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv(
+        "BLOG_SOURCES",
+        json.dumps([{"name": "A", "url": "https://a.example/feed.xml", "category": 1}]),
+    )
+    with pytest.raises(ConfigError, match='"category"'):
+        load_blog_sources()
 
 
 def test_posts_per_source_default(monkeypatch: pytest.MonkeyPatch) -> None:
