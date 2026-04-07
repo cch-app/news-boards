@@ -19,6 +19,7 @@ class BlogSource:
     id: str
     name: str
     url: str
+    category: str = "General"
 
 
 def _parse_sources(raw: str) -> list[BlogSource]:
@@ -27,7 +28,7 @@ def _parse_sources(raw: str) -> list[BlogSource]:
     except json.JSONDecodeError as e:
         raise ConfigError(
             "BLOG_SOURCES must be valid JSON array of objects with "
-            '"name" and "url" keys. Parse error: '
+            '"name" and "url" keys (optional "id", "category"). Parse error: '
             f"{e.msg} at position {e.pos}."
         ) from e
     if not isinstance(data, list):
@@ -45,11 +46,18 @@ def _parse_sources(raw: str) -> list[BlogSource]:
         sid = item.get("id")
         if sid is not None and not isinstance(sid, str):
             raise ConfigError(f'BLOG_SOURCES[{i}] "id" must be a string if present.')
+        raw_cat = item.get("category")
+        if raw_cat is not None and not isinstance(raw_cat, str):
+            raise ConfigError(f'BLOG_SOURCES[{i}] "category" must be a string if present.')
+        category = "General"
+        if isinstance(raw_cat, str) and raw_cat.strip():
+            category = raw_cat.strip()
         out.append(
             BlogSource(
                 id=(sid.strip() if isinstance(sid, str) and sid.strip() else f"src-{i}"),
                 name=name.strip(),
                 url=url.strip(),
+                category=category,
             )
         )
     if not out:
@@ -63,7 +71,8 @@ def load_blog_sources() -> list[BlogSource]:
     if raw is None or not str(raw).strip():
         raise ConfigError(
             "Set the BLOG_SOURCES environment variable to a JSON array, for example: "
-            '[{"name": "Example", "url": "https://example.com/feed.xml"}]'
+            '[{"name": "Example", "url": "https://example.com/feed.xml", '
+            '"category": "General"}] (category is optional; defaults to General).'
         )
     return _parse_sources(raw.strip())
 

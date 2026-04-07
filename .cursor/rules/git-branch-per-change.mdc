@@ -1,0 +1,46 @@
+---
+description: New work on a dedicated branch; commit messages should match the feature or fix for readable history
+alwaysApply: true
+---
+
+# Git: one branch per change
+
+## Before coding
+
+- **Check the current branch** (`git status` / `git branch --show-current`). If you are on **`main`** (or the repo’s default protected branch), **create and switch to a new branch** before making edits or commits.
+- **Do not** start unrelated work on a branch that already has commits for a different task. Finish or stash, then **branch from an up-to-date default** for the new task.
+
+## Naming and base
+
+- Prefer short, descriptive names: `fix/login-timeout`, `feat/board-filters`, `chore/update-deps`.
+- Base the branch on **latest default** when practical: `git fetch origin && git checkout main && git pull` (or equivalent), then `git checkout -b <branch>`.
+
+## Commit messages (readability)
+
+- **Match the change**: the subject line should describe the **same** feature or fix as the branch and the work in the commit—avoid vague labels like `Update`, `Fix stuff`, or `WIP`.
+- **Imperative mood**, ~50 chars or less for the subject: `Add board filters`, `Fix login timeout on slow networks`, not `Added` / `Adds` / `Fixed`.
+- **One logical change per commit** when possible; if the user asked for multiple unrelated items, **split commits** or use a subject that names **all** scoped outcomes clearly.
+
+## Agent behavior
+
+- When the user asks for **new** changes, and we are about to start **implementation** (including after a **Plan → Build/Agent** handoff), **ensure we are on a dedicated branch first**.
+  - If currently on `main` (or the default branch), create and switch to a new branch **before making edits**.
+  - If currently on an existing feature branch for a different task, create a new branch (or finish/stash) before continuing.
+- When committing, **derive the message from the requested feature or bugfix** (and branch name if already chosen) so `git log` and PR titles stay scannable.
+- If the user explicitly says they want commits on **`main`** or an existing branch name, follow that instruction for that task only.
+
+## Examples
+
+```text
+# ❌ BAD: vague message, unrelated to a readable story
+git commit -m "Add feature"
+git commit -m "changes"
+
+# ✅ GOOD: aligns with branch feat/board-filters
+git checkout -b feat/board-filters
+git commit -m "Add filters to board headline list"
+
+# ✅ GOOD: aligns with fix/login-timeout
+git checkout -b fix/login-timeout
+git commit -m "Increase login request timeout for slow networks"
+```
